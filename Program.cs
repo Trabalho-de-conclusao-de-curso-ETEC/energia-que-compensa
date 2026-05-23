@@ -1,10 +1,15 @@
 using energia_que_compensa.Components;
+using energia_que_compensa.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddSingleton<IEnergyService, EnergyService>();
+builder.Services.AddControllers();
+
 
 var app = builder.Build();
 
@@ -24,5 +29,7 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.MapControllers();
 
 app.Run();

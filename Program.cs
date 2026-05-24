@@ -1,11 +1,20 @@
+using System.Net.Http;
 using energia_que_compensa.Components;
 using energia_que_compensa.Services;
+using Microsoft.AspNetCore.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddScoped(sp =>
+{
+    var navigation = sp.GetRequiredService<NavigationManager>();
+
+    return new HttpClient { BaseAddress = new Uri(navigation.BaseUri) };
+});
 
 builder.Services.AddSingleton<IEnergyService, EnergyService>();
 builder.Services.AddControllers();

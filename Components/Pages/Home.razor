@@ -1,0 +1,358 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@using energia_que_compensa.Models
+@inject HttpClient Http
+
+<PageTitle>Energia que Compensa</PageTitle>
+
+<div class="container">
+
+	<h1>ENERGIA QUE COMPENSA</h1>
+	<p>Simule seu consumo elétrico e descubra se energia solar vale a pena</p>
+
+	<EditForm Model="@request" OnValidSubmit="Simular" FormName="energyForm">
+
+		<DataAnnotationsValidator/>
+		<ValidationSummary class="validation"/>
+		
+		<div class="section">
+			<h3>Tarifa (R$/kWh)</h3>
+			<InputNumber @bind-Value="request.TariffRate" class="input"/>
+		</div>
+
+		<div class="section">
+			<div class="section-title">
+				<h3>Aparelhos</h3>
+				<button type="button" class="btn-add" @onclick="AddDevice">Adicionar</button>
+			</div>
+		</div>
+
+		@foreach (var appliance in request.Appliances)
+		{
+			<div class="card">
+
+				<InputText @bind-value="appliance.Name" placeholder="Nome" class="input"/>
+				<InputNumber @bind-Value="appliance.PowerWatts" placeholder="Watts" class="input"/>
+				<InputNumber @bind-Value="appliance.Quantity" placeholder="Qtd" class="input"/>
+				<InputNumber @bind-Value="appliance.DailyHours" placeholder="Horas/dia" class="input"/>
+				<button type="button" @onclick="() => Remove(appliance)">X</button>
+			</div>
+		}
+
+		<button type="submit" class="btn-simulate">Simular</button>
+	</EditForm>
+
+	@if (result != null)
+	{
+		
+		<div class="result">
+
+			<h2>Resultado da Simulação</h2>
+
+			<div class="grid">
+				<div class="info-box">
+					<span>Consumo</span>
+					<strong>@result.TotalKwh kWh/mês</strong>
+				</div>
+
+				<div class="info-box">
+					<span>Custo</span>
+					<strong>R$ @result.TotalCost</strong>
+				</div>
+
+				<div class="info-box">
+					<span>Eficiência</span>
+					<strong>@result.EfficiencyScore / 100</strong>
+				</div>
+
+				<div class="info-box">
+					<span>Categoria</span>
+					<strong>@result.EfficiencyScore</strong>
+				</div>
+			</div>
+
+			<div class="solar-card">
+				<h3>Energia Solar</h3>
+
+				<p>@result.SolarRecommendation.RecommendationMessage</p>
+
+				<div class="grid">
+
+					<div class="info-box">
+						<span>Painéis</span>
+						<strong>@result.SolarRecommendation.PanelsCount</strong>
+					</div>
+
+					<div class="info-box">
+						<span>Sistema</span>
+						<strong>@result.SolarRecommendation.SystemSizeKwp kWp</strong>
+					</div>
+
+					<div class="info-box">
+						<span>Área</span>
+						<strong>@result.SolarRecommendation.TotalAreaSqM m²</strong>
+					</div>
+
+					<div class="info-box">
+						<span>Payback</span>
+						<strong>@result.SolarRecommendation.PaybackYears anos</strong>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+</div>
+<style>
+
+	* {
+		box-sizing: border-box;
+	}
+
+	body {
+		margin: 0;
+		font-family: 'Segoe UI', sans-serif;
+		background: linear-gradient(135deg, #0d1117, #111827);
+		color: #e5e7eb;
+	}
+
+	.page {
+		min-height: 100vh;
+		padding: 40px 20px;
+	}
+
+	.container {
+		max-width: 1100px;
+		margin: auto;
+	}
+
+	.hero {
+		text-align: center;
+		margin-bottom: 40px;
+	}
+
+	.hero h1 {
+		font-size: 2.4rem;
+		color: #3b82f6;
+		margin-bottom: 10px;
+	}
+
+	.hero p {
+		color: #9ca3af;
+		font-size: 1rem;
+	}
+
+	.section {
+		margin-bottom: 30px;
+	}
+
+	.section-title {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 15px;
+	}
+
+	.section-title h3 {
+		margin: 0;
+		color: #60a5fa;
+	}
+
+	.card {
+		display: grid;
+		grid-template-columns: 2fr 1fr 1fr 1fr auto;
+		gap: 12px;
+		margin-bottom: 12px;
+		padding: 18px;
+		background: rgba(255, 255, 255, 0.06);
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: 14px;
+		backdrop-filter: blur(8px);
+		transition: 0.2s ease;
+	}
+
+	.card:hover {
+		transform: translateY(-2px);
+		border-color: #3b82f6;
+	}
+
+	.input {
+		width: 100%;
+		padding: 12px;
+		border: none;
+		border-radius: 10px;
+		background: #1f2937;
+		color: white;
+		outline: none;
+	}
+
+	.input:focus {
+		box-shadow: 0 0 0 2px #3b82f6;
+	}
+
+	.full {
+		max-width: 220px;
+	}
+
+	button {
+		border: none;
+		cursor: pointer;
+		transition: 0.2s;
+		font-weight: 600;
+	}
+
+	.btn-add {
+		background: #10b981;
+		color: white;
+		padding: 10px 14px;
+		border-radius: 10px;
+	}
+
+	.btn-add:hover {
+		opacity: 0.9;
+	}
+
+	.btn-remove {
+		width: 42px;
+		border-radius: 10px;
+		background: #ef4444;
+		color: white;
+		font-size: 18px;
+	}
+
+	.btn-simulate {
+		width: 100px;
+		padding: 16px;
+		border-radius: 14px;
+		font-size: 16px;
+		background: linear-gradient(90deg, #2563eb, #3b82f6);
+		color: white);
+		margin-top: 20px;
+		box-shadow: 0 8px 24px rgba(59, 130, 246, 0.25);
+	}
+
+	.btn-simulate:hover {
+		transform: translateY(-2px);
+	}
+
+	.result {
+		margin-top: 40px;
+		padding: 25px;
+		border-radius: 18px;
+		background: rgba(255, 255, 255, 0.04);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+	}
+
+	.result h2 {
+		margin-top: 0;
+		color: #60a5fa;
+	}
+
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+		gap: 16px;
+		margin-top: 20px;
+	}
+
+	.info-box {
+		padding: 18px;
+		border-radius: 14px;
+		background: #111827;
+		border: 1px solid #1f2937;
+	}
+
+	.info-box span {
+		display: block;
+		color: #9ac3af;
+		margin-bottom: 8px;
+		font-size: 0.9rem;
+	}
+
+	.info-box strong {
+		color: #f8afafc;
+		font-size: 1.15rem;
+	}
+
+	.solar-card {
+		margin-top: 30px;
+		padding: 20px;
+		border-radius: 16px;
+		background: rgba(59, 130, 246, 0.08);
+		border: 1px solid rgba(59, 130, 246, 0.02);
+	}
+
+	.solar-card h3 {
+		margin-top: 0;
+		color: #93c5fd;
+	}
+
+	.validation {
+		color: #f87171;
+		margin-bottom: 15px;
+	}
+
+	@@media (max-width: 900px) {
+		.card {
+			grid-template-columns: 1fr;
+		}
+
+		.btn-remove {
+			width: 100%;
+			height: 42px;
+		}
+
+		.hero h1 {
+			font-size: 1.8rem;
+		}
+	}
+
+</style>
+
+@code {
+
+	private SimulationRequestDto request = new();
+	private SimulationResult? result;
+
+	protected override void OnInitialized()
+	{
+		request.TariffRate = 0.85;
+
+		request.Appliances.Add(new Appliance
+			{
+				Name = "Geladeira",
+				PowerWatts = 150,
+				Quantity = 1,
+				DailyHours = 24
+			});
+	}
+
+	private void AddDevice()
+	{
+		request.Appliances.Add(new Appliance
+			{
+				Quantity = 1,
+				DailyHours = 1
+			});
+	}
+
+	private void Remove(Appliance appliance)
+	{
+		request.Appliances.Remove(appliance);
+	}
+
+	private async Task Simular()
+	{
+		var response = await Http.PostAsJsonAsync("api/energy/simulate-appliances", request);
+
+		if (response.IsSuccessStatusCode)
+		{
+			result = await response.Content.ReadFromJsonAsync<SimulationResult>();
+		}
+	}
+
+	public class SimulationRequestDto
+	{
+		public List<Appliance> Appliances { get; set; } = new();
+		public double TariffRate { get; set; }
+	}
+}

@@ -1,7 +1,9 @@
+using System.Net.Http;
 using energia_que_compensa.Components;
 using energia_que_compensa.Data;
 using energia_que_compensa.Models;
 using energia_que_compensa.Services;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,6 +31,12 @@ builder.Services.AddHttpClient<IAneelTariffService, AneelTariffService>();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddScoped(sp =>
+{
+    var navigation = sp.GetRequiredService<NavigationManager>();
+
+    return new HttpClient { BaseAddress = new Uri(navigation.BaseUri) };
+});
 builder.Services.AddControllers();
 
 // Swagger

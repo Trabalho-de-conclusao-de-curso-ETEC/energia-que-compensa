@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <!-- ORM e banco PostgreSQL (compatível com Supabase) -->
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.03" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
       <PrivateAssets>all</PrivateAssets>

@@ -7,11 +7,11 @@ namespace energia_que_compensa.Services
 {
     public class EnergyService : IEnergyService
     {
-        private const double KWH_GENERATION_PER_PANEL = 50.0; // average monthly generation of a 400W solar panel in Brazil
-        private const double PANEL_AREA_SQM = 2.0;            // size of a typical 400W panel
-        private const double PANEL_CAPACITY_KWP = 0.40;       // 400W = 0.40 kWp
-        private const double CO2_EMISSION_FACTOR = 0.10;      // 0.10 kg CO2 per kWh in the Brazilian electricity grid (SIN)
-        private const double CO2_ABSORPTION_PER_TREE_YEAR = 15.0; // a typical young tree absorbs 15kg CO2/year
+        private const double KWH_GENERATION_PER_PANEL = 50.0; 
+        private const double PANEL_AREA_SQM = 2.0;            
+        private const double PANEL_CAPACITY_KWP = 0.40;       
+        private const double CO2_EMISSION_FACTOR = 0.10;      
+        private const double CO2_ABSORPTION_PER_TREE_YEAR = 15.0; 
 
         public SimulationResult RunSimulation(double monthlyKwh, double tariffRate)
         {
@@ -45,13 +45,13 @@ namespace energia_que_compensa.Services
         {
             return new List<Appliance>
             {
-                new Appliance { Name = "Geladeira Frost Free", PowerWatts = 50, Quantity = 1, DailyHours = 24 }, // Continuous average
-                new Appliance { Name = "Chuveiro Elétrico", PowerWatts = 5500, Quantity = 1, DailyHours = 1 },   // 1 hour total per day
+                new Appliance { Name = "Geladeira Frost Free", PowerWatts = 50, Quantity = 1, DailyHours = 24 }, 
+                new Appliance { Name = "Chuveiro Elétrico", PowerWatts = 5500, Quantity = 1, DailyHours = 1 },   
                 new Appliance { Name = "Ar Condicionado", PowerWatts = 1200, Quantity = 1, DailyHours = 6 },
                 new Appliance { Name = "Televisão LED", PowerWatts = 90, Quantity = 2, DailyHours = 5 },
                 new Appliance { Name = "Computador / Desktop", PowerWatts = 150, Quantity = 1, DailyHours = 5 },
                 new Appliance { Name = "Máquina de Lavar Roupa", PowerWatts = 500, Quantity = 1, DailyHours = 1 },
-                new Appliance { Name = "Forno Micro-ondas", PowerWatts = 1200, Quantity = 1, DailyHours = 0.3 }, // 18 minutes
+                new Appliance { Name = "Forno Micro-ondas", PowerWatts = 1200, Quantity = 1, DailyHours = 0.3 }, 
                 new Appliance { Name = "Iluminação Residencial (LED)", PowerWatts = 100, Quantity = 1, DailyHours = 6 }
             };
         }
